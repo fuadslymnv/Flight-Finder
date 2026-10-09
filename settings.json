@@ -1,0 +1,108 @@
+{
+  "default_home_airports": [
+    "BUD",
+    "DEB",
+    "BTS"
+  ],
+  "default_airlines": [
+    "W6",
+    "W9",
+    "FR",
+    "RK"
+  ],
+  "default_currency": "EUR",
+  "cache_ttl_hours": 4,
+  "include_ground_transfer_cost_by_default": false,
+  "ground_transfers": {
+    "BUD-BTS": {
+      "route": "BUD-BTS",
+      "from_airport": "BUD",
+      "to_airport": "BTS",
+      "transit_hours": 2.5,
+      "description": "RegioJet / FlixBus between Budapest & Bratislava (frequent departures, ~2.5 hours)",
+      "cost_eur": 15.0,
+      "cost_huf": 6000.0
+    },
+    "BTS-BUD": {
+      "route": "BTS-BUD",
+      "from_airport": "BTS",
+      "to_airport": "BUD",
+      "transit_hours": 2.5,
+      "description": "RegioJet / FlixBus between Bratislava & Budapest (frequent departures, ~2.5 hours)",
+      "cost_eur": 15.0,
+      "cost_huf": 6000.0
+    },
+    "BUD-DEB": {
+      "route": "BUD-DEB",
+      "from_airport": "BUD",
+      "to_airport": "DEB",
+      "transit_hours": 3.0,
+      "description": "M\u00c1V InterCity train between Budapest & Debrecen (~2.5 - 3.0 hours)",
+      "cost_eur": 10.0,
+      "cost_huf": 4000.0
+    },
+    "DEB-BUD": {
+      "route": "DEB-BUD",
+      "from_airport": "DEB",
+      "to_airport": "BUD",
+      "transit_hours": 3.0,
+      "description": "M\u00c1V InterCity train between Debrecen & Budapest (~2.5 - 3.0 hours)",
+      "cost_eur": 10.0,
+      "cost_huf": 4000.0
+    },
+    "DEB-BTS": {
+      "route": "DEB-BTS",
+      "from_airport": "DEB",
+      "to_airport": "BTS",
+      "transit_hours": 5.0,
+      "description": "Train/bus via Budapest connection (~5.0 hours)",
+      "cost_eur": 25.0,
+      "cost_huf": 10000.0
+    },
+    "BTS-DEB": {
+      "route": "BTS-DEB",
+      "from_airport": "BTS",
+      "to_airport": "DEB",
+      "transit_hours": 5.0,
+      "description": "Train/bus via Budapest connection (~5.0 hours)",
+      "cost_eur": 25.0,
+      "cost_huf": 10000.0
+    },
+    "VIE-BTS": {
+      "route": "VIE-BTS",
+      "from_airport": "VIE",
+      "to_airport": "BTS",
+      "transit_hours": 1.0,
+      "description": "Slovak Lines / RegioJet / FlixBus between Vienna & Bratislava (~45-60 mins)",
+      "cost_eur": 8.0,
+      "cost_huf": 3200.0
+    },
+    "BTS-VIE": {
+      "route": "BTS-VIE",
+      "from_airport": "BTS",
+      "to_airport": "VIE",
+      "transit_hours": 1.0,
+      "description": "Slovak Lines / RegioJet / FlixBus between Bratislava & Vienna (~45-60 mins)",
+      "cost_eur": 8.0,
+      "cost_huf": 3200.0
+    },
+    "BUD-VIE": {
+      "route": "BUD-VIE",
+      "from_airport": "BUD",
+      "to_airport": "VIE",
+      "transit_hours": 2.5,
+      "description": "ÖBB Railjet / RegioJet / FlixBus between Budapest & Vienna (~2.5 hours)",
+      "cost_eur": 18.0,
+      "cost_huf": 7200.0
+    },
+    "VIE-BUD": {
+      "route": "VIE-BUD",
+      "from_airport": "VIE",
+      "to_airport": "BUD",
+      "transit_hours": 2.5,
+      "description": "ÖBB Railjet / RegioJet / FlixBus between Vienna & Budapest (~2.5 hours)",
+      "cost_eur": 18.0,
+      "cost_huf": 7200.0
+    }
+  }
+}
