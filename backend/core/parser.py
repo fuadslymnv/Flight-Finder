@@ -46,6 +46,11 @@ AIRPORT_KEYWORDS = {
     "dub": "DUB", "dublin": "DUB",
     "bva": "BVA", "paris": "BVA",
     "crl": "CRL", "brussels": "CRL",
+    "vno": "VNO", "vilnius": "VNO",
+    "tll": "TLL", "tallinn": "TLL", "tallin": "TLL",
+    "rix": "RIX", "riga": "RIX",
+    "hel": "HEL", "helsinki": "HEL",
+    "kun": "KUN", "kaunas": "KUN",
     "ein": "EIN", "eindhoven": "EIN",
     "ams": "AMS", "amsterdam": "AMS",
 }

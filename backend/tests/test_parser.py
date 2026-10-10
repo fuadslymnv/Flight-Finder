@@ -69,4 +69,9 @@ def test_parser_any_airport():
     assert "STN" in p3.origins and "LTN" in p3.origins
     assert p3.destination == "Barcelona"
 
+    p4 = parse_natural_language_query("from Vilnius to Tallinn for 3 nights", base_date=base)
+    assert p4.origins == ["VNO"]
+    assert p4.destination == "Tallinn"
+    assert p4.min_nights == 3
+
 

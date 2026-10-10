@@ -1,9 +1,6 @@
 services:
   - type: web
     name: flight-finder
-    runtime: python
-    buildCommand: "npm --prefix frontend install && npm --prefix frontend run build && pip install -r requirements.txt"
-    startCommand: "python -m uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT"
-    envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.9
+    env: docker
+    plan: free
+
