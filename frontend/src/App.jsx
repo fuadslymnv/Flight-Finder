@@ -167,54 +167,54 @@ export default function App() {
           </div>
 
           {/* Navigation Tabs */}
-          <div className="max-w-5xl mx-auto flex items-center justify-between border-b border-gray-200 pb-3 mb-6">
-            <div className="flex items-center space-x-2">
+          <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-200 pb-3 mb-6 gap-3">
+            <div className="flex items-center space-x-1.5 sm:space-x-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
               <button
                 onClick={() => setActiveTab('results')}
-                className={`flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                className={`flex items-center space-x-1.5 px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
                   activeTab === 'results'
                     ? 'bg-blue-600 text-white shadow-xs'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                 }`}
               >
                 <Plane className="w-3.5 h-3.5" />
-                <span>Flight Results ({itineraries.length})</span>
+                <span><span className="hidden sm:inline">Flight </span>Results ({itineraries.length})</span>
               </button>
 
               <button
                 onClick={() => setActiveTab('explore')}
-                className={`flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                className={`flex items-center space-x-1.5 px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
                   activeTab === 'explore'
                     ? 'bg-blue-600 text-white shadow-xs'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                 }`}
               >
                 <Compass className="w-3.5 h-3.5" />
-                <span>Explore Destinations</span>
+                <span>Explore<span className="hidden sm:inline"> Destinations</span></span>
               </button>
 
               <button
                 onClick={() => setActiveTab('calendar')}
-                className={`flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                className={`flex items-center space-x-1.5 px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
                   activeTab === 'calendar'
                     ? 'bg-blue-600 text-white shadow-xs'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                 }`}
               >
                 <CalendarIcon className="w-3.5 h-3.5" />
-                <span>Price Calendar</span>
+                <span><span className="hidden sm:inline">Price </span>Calendar</span>
               </button>
             </div>
 
             {/* Sort Dropdown (for results tab) */}
             {activeTab === 'results' && itineraries.length > 0 && (
-              <div className="flex items-center space-x-1.5 text-xs text-gray-500">
-                <ArrowUpDown className="w-3.5 h-3.5" />
-                <span className="font-medium hidden sm:inline">Sort:</span>
+              <div className="flex items-center space-x-1.5 text-xs text-gray-500 self-end sm:self-auto shrink-0 bg-white sm:bg-transparent px-2 sm:px-0 py-1 sm:py-0 rounded-lg border sm:border-0 border-gray-200">
+                <ArrowUpDown className="w-3.5 h-3.5 text-gray-500" />
+                <span className="font-medium text-gray-500">Sort:</span>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="bg-transparent font-bold text-gray-800 focus:outline-none cursor-pointer"
+                  className="bg-transparent font-bold text-gray-800 focus:outline-none cursor-pointer text-xs"
                 >
                   <option value="price">Cheapest Total Price</option>
                   <option value="date">Earliest Departure Date</option>

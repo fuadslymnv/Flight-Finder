@@ -34,3 +34,23 @@ def test_parser_same_airport_only():
     assert p.allow_open_jaw is False
     assert p.origins == ["BTS"]
     assert p.max_price == 100.0
+
+
+def test_parser_advanced_suggestions():
+    base = date(2026, 10, 3)
+    p1 = parse_natural_language_query("weekend in London in Nov", base_date=base)
+    assert p1.destination == "London"
+    assert p1.min_nights == 2
+    assert p1.max_nights == 3
+    assert p1.date_from.month == 11
+    assert p1.date_to.month == 11
+
+    p2 = parse_natural_language_query("Milan or Rome under 50 EUR", base_date=base)
+    assert "Milan" in p2.destination and "Rome" in p2.destination
+    assert p2.max_price == 50.0
+
+    p3 = parse_natural_language_query("Paris for 3 nights", base_date=base)
+    assert p3.destination == "Paris"
+    assert p3.min_nights == 3
+    assert p3.max_nights == 3
+

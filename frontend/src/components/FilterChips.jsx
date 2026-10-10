@@ -91,7 +91,7 @@ export default function FilterChips({ params, onChange, onApply }) {
           </button>
 
           {activeDropdown === 'origins' && (
-            <div className="absolute left-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-200 p-3 z-30">
+            <div className="absolute left-0 mt-2 w-56 max-w-[calc(100vw-3rem)] bg-white rounded-xl shadow-xl border border-gray-200 p-3 z-30">
               <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Home Airports</p>
               <div className="space-y-1.5">
                 {ALL_AIRPORTS.map((apt) => {
@@ -144,7 +144,7 @@ export default function FilterChips({ params, onChange, onApply }) {
           </button>
 
           {activeDropdown === 'nights' && (
-            <div className="absolute left-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-200 p-4 z-30">
+            <div className="absolute left-0 mt-2 w-64 max-w-[calc(100vw-3rem)] bg-white rounded-xl shadow-xl border border-gray-200 p-4 z-30">
               <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Trip Length</p>
               <div className="space-y-3">
                 <div className="flex items-center justify-between text-xs">
@@ -199,7 +199,7 @@ export default function FilterChips({ params, onChange, onApply }) {
           </button>
 
           {activeDropdown === 'weekdays' && (
-            <div className="absolute left-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-200 p-3 z-30">
+            <div className="absolute left-0 mt-2 w-64 max-w-[calc(100vw-3rem)] bg-white rounded-xl shadow-xl border border-gray-200 p-3 z-30">
               <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Allowed Outbound Days</p>
               <div className="grid grid-cols-4 gap-1.5">
                 {WEEKDAYS.map((w) => {
@@ -253,11 +253,11 @@ export default function FilterChips({ params, onChange, onApply }) {
         )}
 
         {/* Apply / Refresh Button */}
-        <div className="ml-auto flex items-center gap-2">
+        <div className="w-full sm:w-auto sm:ml-auto mt-1 sm:mt-0 flex justify-end">
           <button
             type="button"
             onClick={onApply}
-            className="flex items-center space-x-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-xl shadow-xs transition-all cursor-pointer"
+            className="w-full sm:w-auto flex items-center justify-center space-x-1.5 px-4 py-2.5 sm:py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-xl shadow-xs transition-all cursor-pointer"
           >
             <span>Update Results</span>
           </button>

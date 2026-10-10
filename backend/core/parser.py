@@ -182,27 +182,69 @@ def parse_natural_language_query(text: str, base_date: Optional[date] = None) ->
         r'from\s+[a-zA-Z\s,]+',
     ]
     delim_pattern = "|".join(delimiters)
+
+    stop_dest_words = {
+        "a", "the", "any", "cheap", "anywhere", "europe", "places", "destinations",
+        "somewhere", "trip", "trips", "flight", "flights", "weekend", "long weekend",
+        "vacation", "holiday", "leave", "leaving", "depart", "departing", "go", "going",
+        "fly", "flying", "travel", "traveling"
+    }
+    time_dest_words = set(MONTH_NAMES.keys()) | {
+        "next", "in", "at", "for", "summer", "winter", "spring", "fall", "autumn",
+        "today", "tomorrow", "month", "months", "year", "week", "weeks", "days", "day"
+    }
+
+    def _clean_destination_candidate(raw: str) -> Optional[str]:
+        parts = re.split(r'[,/]|(?:\b(?:and|or)\b)', raw)
+        cleaned_list = []
+        for p in parts:
+            words = [
+                w for w in p.strip().split()
+                if w.lower() not in stop_dest_words and w.lower() not in time_dest_words
+            ]
+            if words:
+                d_str = " ".join(words).title()
+                if d_str.lower() in ("tallin", "talinn"):
+                    d_str = "Tallinn"
+                if d_str.lower() not in AIRPORT_KEYWORDS:
+                    cleaned_list.append(d_str)
+        return ", ".join(cleaned_list) if cleaned_list else None
+
+    # Try explicit 'to / visiting / towards'
     to_match = re.search(
         rf'(?:to|visiting|towards)\s+([a-zA-Z0-9\s,/\-]+?)(?=\s+(?:{delim_pattern})|$)',
         q,
         re.IGNORECASE
     )
     if to_match:
-        raw_dest = to_match.group(1).strip()
-        parts = re.split(r'[,/]|(?:\b(?:and|or)\b)', raw_dest)
-        stop_words = {"a", "the", "any", "cheap", "anywhere", "europe", "places", "destinations", "somewhere", "trip", "trips", "flight", "flights", "weekend"}
-        cleaned_dests = []
-        for p in parts:
-            words = [w for w in p.strip().split() if w.lower() not in stop_words]
-            if words:
-                d_str = " ".join(words).title()
-                if d_str.lower() in ("tallin", "talinn"):
-                    d_str = "Tallinn"
-                cleaned_dests.append(d_str)
-        if cleaned_dests:
-            destination = ", ".join(cleaned_dests)
-        else:
-            destination = "anywhere"
+        cand = _clean_destination_candidate(to_match.group(1).strip())
+        if cand:
+            destination = cand
+
+    # If still 'anywhere', try 'in / at <destination>'
+    if destination == "anywhere":
+        in_matches = re.finditer(
+            rf'(?:in|at)\s+([a-zA-Z0-9\s,/\-]+?)(?=\s+(?:{delim_pattern})|$)',
+            q,
+            re.IGNORECASE
+        )
+        for m in in_matches:
+            cand = _clean_destination_candidate(m.group(1).strip())
+            if cand:
+                destination = cand
+                break
+
+    # If still 'anywhere', check leading destination (e.g. 'Milan or Rome under 50 EUR', 'Paris for 3 nights')
+    if destination == "anywhere":
+        lead_match = re.search(
+            rf'^([a-zA-Z0-9\s,/\-]+?)(?=\s+(?:{delim_pattern})|$)',
+            q,
+            re.IGNORECASE
+        )
+        if lead_match:
+            cand = _clean_destination_candidate(lead_match.group(1).strip())
+            if cand:
+                destination = cand
 
     # 8. Parse Open-Jaw preference
     allow_open_jaw = True

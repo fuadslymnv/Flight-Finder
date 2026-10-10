@@ -80,13 +80,13 @@ export default function CalendarHeatmap({ destination, params, currency, onSelec
         </div>
 
         {/* Destination Picker */}
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs font-semibold text-gray-600">Destination:</span>
           <input
             type="text"
             value={destInput}
             onChange={(e) => setDestInput(e.target.value)}
-            className="text-xs font-bold px-3 py-1.5 rounded-xl border border-gray-300 focus:outline-none focus:border-blue-500 w-32"
+            className="text-xs font-bold px-3 py-1.5 rounded-xl border border-gray-300 focus:outline-none focus:border-blue-500 w-28 sm:w-32"
           />
           <button
             onClick={() => fetchHeatmap(destInput)}

@@ -42,9 +42,9 @@ export default function FlightCard({ itinerary, index }) {
   return (
     <div className="bg-white rounded-2xl border border-gray-200 hover:border-blue-400 shadow-sm hover:shadow-md transition-all overflow-hidden mb-4">
       {/* Card Top Header */}
-      <div className="px-5 py-3.5 bg-gray-50/80 border-b border-gray-100 flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center space-x-2.5">
-          <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-800 text-xs font-bold flex items-center justify-center">
+      <div className="px-4 sm:px-5 py-3.5 bg-gray-50/80 border-b border-gray-100 flex flex-wrap items-center justify-between gap-2.5">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+          <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-800 text-xs font-bold flex items-center justify-center shrink-0">
             {index}
           </span>
           <span className="text-base font-bold text-gray-900 tracking-tight">
@@ -175,29 +175,29 @@ export default function FlightCard({ itinerary, index }) {
       </div>
 
       {/* Action Booking Bar */}
-      <div className="px-5 py-3 bg-gray-50 border-t border-gray-100 flex flex-wrap items-center justify-between gap-2">
+      <div className="px-4 sm:px-5 py-3 bg-gray-50 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <button
           onClick={() => setExpanded(!expanded)}
-          className="text-xs font-semibold text-gray-600 hover:text-gray-900 flex items-center space-x-1 cursor-pointer"
+          className="text-xs font-semibold text-gray-600 hover:text-gray-900 flex items-center space-x-1 cursor-pointer self-start sm:self-auto py-1"
         >
           <span>{expanded ? 'Hide Details' : 'Flight Details'}</span>
           {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
         </button>
 
         {/* Dual Booking Buttons */}
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Direct Airline Booking Links */}
           {(out.direct_airline_url || ret.direct_airline_url) && (
-            <div className="flex items-center space-x-1">
+            <div className="flex flex-wrap items-center gap-1.5">
               {out.direct_airline_url && (
                 <a
                   href={out.direct_airline_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-2.5 py-1 text-xs font-semibold text-gray-700 bg-white hover:bg-gray-100 border border-gray-300 rounded-lg flex items-center space-x-1 transition-all"
+                  className="px-2.5 py-1.5 text-[11px] sm:text-xs font-semibold text-gray-700 bg-white hover:bg-gray-100 border border-gray-300 rounded-lg flex items-center space-x-1 transition-all"
                   title="Book Outbound leg directly on airline site"
                 >
-                  <span>Book Outbound ({out.carrier_code})</span>
+                  <span>Outbound ({out.carrier_code})</span>
                   <ExternalLink className="w-3 h-3 text-gray-400" />
                 </a>
               )}
@@ -206,10 +206,10 @@ export default function FlightCard({ itinerary, index }) {
                   href={ret.direct_airline_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-2.5 py-1 text-xs font-semibold text-gray-700 bg-white hover:bg-gray-100 border border-gray-300 rounded-lg flex items-center space-x-1 transition-all"
+                  className="px-2.5 py-1.5 text-[11px] sm:text-xs font-semibold text-gray-700 bg-white hover:bg-gray-100 border border-gray-300 rounded-lg flex items-center space-x-1 transition-all"
                   title="Book Return leg directly on airline site"
                 >
-                  <span>Book Return ({ret.carrier_code})</span>
+                  <span>Return ({ret.carrier_code})</span>
                   <ExternalLink className="w-3 h-3 text-gray-400" />
                 </a>
               )}
@@ -222,7 +222,7 @@ export default function FlightCard({ itinerary, index }) {
               href={out.booking_url || ret.booking_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-3.5 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg flex items-center space-x-1.5 shadow-xs transition-all"
+              className="px-3.5 py-1.5 text-[11px] sm:text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg flex items-center space-x-1.5 shadow-xs transition-all"
             >
               <span>Book on Kiwi</span>
               <ExternalLink className="w-3.5 h-3.5" />
