@@ -75,3 +75,16 @@ def test_parser_any_airport():
     assert p4.min_nights == 3
 
 
+def test_parser_cheapest_weekend_flights_vilnius_multiple_months():
+    base = date(2026, 10, 10)
+    p = parse_natural_language_query("Cheapest weekend flights from Vilnius in November, December", base_date=base)
+    assert p.origins == ["VNO"]
+    assert p.destination == "anywhere"
+    assert p.date_from == date(2026, 11, 1)
+    assert p.date_to == date(2026, 12, 31)
+    assert set(p.departure_weekdays) == {4, 5}
+    assert p.min_nights == 2
+    assert p.max_nights == 3
+
+
+

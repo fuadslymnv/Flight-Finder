@@ -118,29 +118,47 @@ def parse_natural_language_query(text: str, base_date: Optional[date] = None) ->
         date_from = today + timedelta(days=7)
         date_to = today + timedelta(days=90)
     else:
-        # Check specific month mention, e.g. "in november", "in dec"
-        month_found = None
-        for m_name, m_num in MONTH_NAMES.items():
-            if re.search(rf'\b(?:in|for|during)\s+{m_name}\b', q):
-                month_found = m_num
-                break
-        if month_found:
+        # Check specific month mentions, e.g. "in november", "in dec", "in november, december", "november to december"
+        found_months = []
+        month_words = set(MONTH_NAMES.keys())
+        has_time_prep = bool(re.search(r'\b(?:in|for|during|between|from|throughout)\b', q))
+        # Find all words in query that match a month
+        tokens = re.findall(r'\b[a-z]+\b', q)
+        for tok in tokens:
+            if tok in month_words:
+                if tok in ("may", "mar") and not has_time_prep:
+                    continue
+                m_num = MONTH_NAMES[tok]
+                if not found_months or found_months[-1] != m_num:
+                    found_months.append(m_num)
+
+        if found_months:
+            start_m = found_months[0]
+            end_m = found_months[-1]
+
             year = today.year
-            if month_found < today.month:
+            if start_m < today.month:
                 year += 1
-            # Start from the 1st of that month (or today + 1 if current month)
-            start_d = date(year, month_found, 1)
+
+            start_d = date(year, start_m, 1)
             if start_d < today:
                 start_d = today + timedelta(days=1)
-            # End of month
-            if month_found in (1, 3, 5, 7, 8, 10, 12):
+
+            end_year = year
+            if end_m < start_m:
+                end_year += 1
+
+            # End day of ending month
+            if end_m in (1, 3, 5, 7, 8, 10, 12):
                 end_day = 31
-            elif month_found == 2:
-                end_day = 28
+            elif end_m == 2:
+                is_leap = (end_year % 4 == 0 and (end_year % 100 != 0 or end_year % 400 == 0))
+                end_day = 29 if is_leap else 28
             else:
                 end_day = 30
+
             date_from = start_d
-            date_to = date(year, month_found, end_day)
+            date_to = date(end_year, end_m, end_day)
 
     # 4. Parse Currency & Max Price
     currency = "EUR"
@@ -213,14 +231,21 @@ def parse_natural_language_query(text: str, base_date: Optional[date] = None) ->
         r'exclude|excluding|except|without',
         r'same\s+airport|open\s+jaw|no\s+open\s+jaw',
         r'from\s+[a-zA-Z\s,]+',
+        r'\bflights?\b',
+        r'\bweekends?\b',
     ]
     delim_pattern = "|".join(delimiters)
 
     stop_dest_words = {
-        "a", "the", "any", "cheap", "anywhere", "europe", "places", "destinations",
-        "somewhere", "trip", "trips", "flight", "flights", "weekend", "long weekend",
-        "vacation", "holiday", "leave", "leaving", "depart", "departing", "go", "going",
-        "fly", "flying", "travel", "traveling"
+        "a", "an", "the", "any", "cheap", "cheapest", "cheaper", "best", "top", "direct",
+        "deal", "deals", "ticket", "tickets", "fare", "fares", "quick", "anywhere",
+        "europe", "places", "destinations", "somewhere", "trip", "trips", "flight",
+        "flights", "weekend", "weekends", "long weekend", "vacation", "holiday",
+        "leave", "leaving", "depart", "departing", "go", "going", "fly", "flying",
+        "travel", "traveling", "find", "search", "show", "get", "give", "me",
+        "want", "looking", "for", "please", "all", "roundtrip", "round", "return",
+        "one", "way", "from", "to", "in", "at", "during", "between", "cities", "city",
+        "country", "countries"
     }
     time_dest_words = set(MONTH_NAMES.keys()) | {
         "next", "in", "at", "for", "summer", "winter", "spring", "fall", "autumn",
