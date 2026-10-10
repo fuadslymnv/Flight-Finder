@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getSettings, updateSettings } from '../api';
-import { X, Save, Bus, Shield, RotateCcw, Check } from 'lucide-react';
+import { X, Save, Bus, Shield, RotateCcw, Check, MapPin } from 'lucide-react';
 
 export default function SettingsModal({ isOpen, onClose }) {
   const [settings, setSettings] = useState(null);
@@ -122,6 +122,30 @@ export default function SettingsModal({ isOpen, onClose }) {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* Default Home Airports */}
+          <div className="pt-4 border-t border-gray-100">
+            <div className="flex items-center space-x-2 mb-3">
+              <MapPin className="w-4 h-4 text-blue-600" />
+              <h3 className="text-sm font-bold text-gray-900">Default Home Airports</h3>
+            </div>
+            <div className="p-4 rounded-2xl bg-gray-50 border border-gray-200">
+              <p className="text-xs text-gray-500 mb-2">
+                Comma-separated airport IATA codes used as default origins when no origin is specified in searches (e.g. BUD, BTS, VIE, BER, STN).
+              </p>
+              <input
+                type="text"
+                value={(settings.default_home_airports || []).join(', ')}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  const list = val.split(',').map((s) => s.trim().toUpperCase()).filter(Boolean);
+                  setSettings({ ...settings, default_home_airports: list });
+                }}
+                placeholder="BUD, BTS, VIE, BER..."
+                className="w-full px-3 py-2 text-xs font-bold rounded-xl border border-gray-300 bg-white"
+              />
             </div>
           </div>
 

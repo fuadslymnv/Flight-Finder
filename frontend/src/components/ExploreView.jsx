@@ -6,7 +6,7 @@ export default function ExploreView({ destinations, loading, onSelectDestination
     return (
       <div className="py-16 text-center">
         <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-600 border-t-transparent mb-4"></div>
-        <p className="text-sm font-medium text-gray-600">Discovering cheapest destinations from BUD, DEB, and BTS...</p>
+        <p className="text-sm font-medium text-gray-600">Discovering cheapest destinations across selected airports...</p>
       </div>
     );
   }
@@ -26,7 +26,7 @@ export default function ExploreView({ destinations, loading, onSelectDestination
       <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="text-lg font-bold text-gray-900 tracking-tight">Explore Cheapest Destinations</h2>
-          <p className="text-xs text-gray-500">Cheapest round trips found from Budapest, Debrecen & Bratislava</p>
+          <p className="text-xs text-gray-500">Cheapest round trips found across selected origin airports</p>
         </div>
         <span className="text-xs font-semibold px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full border border-blue-200">
           {destinations.length} Destinations

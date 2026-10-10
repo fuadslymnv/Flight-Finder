@@ -21,10 +21,20 @@ const WEEKDAYS = [
   { id: 6, label: 'Sun' },
 ];
 
-const ALL_AIRPORTS = [
+const POPULAR_AIRPORTS = [
   { code: 'BUD', name: 'Budapest' },
-  { code: 'DEB', name: 'Debrecen' },
   { code: 'BTS', name: 'Bratislava' },
+  { code: 'VIE', name: 'Vienna' },
+  { code: 'DEB', name: 'Debrecen' },
+  { code: 'PRG', name: 'Prague' },
+  { code: 'WAW', name: 'Warsaw' },
+  { code: 'BER', name: 'Berlin' },
+  { code: 'STN', name: 'London (STN)' },
+  { code: 'LTN', name: 'London (LTN)' },
+  { code: 'BGY', name: 'Milan (BGY)' },
+  { code: 'FCO', name: 'Rome (FCO)' },
+  { code: 'MAD', name: 'Madrid' },
+  { code: 'BCN', name: 'Barcelona' },
 ];
 
 export default function FilterChips({ params, onChange, onApply }) {
@@ -35,7 +45,7 @@ export default function FilterChips({ params, onChange, onApply }) {
   };
 
   const toggleOrigin = (code) => {
-    let nextOrigins = [...params.origins];
+    let nextOrigins = Array.isArray(params.origins) ? [...params.origins] : [];
     if (nextOrigins.includes(code)) {
       if (nextOrigins.length > 1) {
         nextOrigins = nextOrigins.filter((c) => c !== code);
@@ -74,31 +84,52 @@ export default function FilterChips({ params, onChange, onApply }) {
   return (
     <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm mb-6">
       <div className="flex flex-wrap items-center gap-2">
-        {/* Origin Airports Chip */}
+        {/* Origin Airports Chip - Editable & Dropdown */}
         <div className="relative">
-          <button
-            type="button"
-            onClick={() => toggleDropdown('origins')}
-            className={`flex items-center space-x-1.5 px-3 py-2 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
-              params.origins.length < 3
-                ? 'bg-blue-50 border-blue-400 text-blue-800'
-                : 'bg-gray-50 border-gray-200 text-gray-800 hover:bg-gray-100'
-            }`}
-          >
-            <MapPin className="w-3.5 h-3.5 text-blue-600" />
-            <span>From: {params.origins.join(', ')}</span>
-            <ChevronDown className="w-3 h-3 opacity-60" />
-          </button>
+          <div className="flex items-center bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
+            <MapPin className="w-3.5 h-3.5 text-blue-600 mr-1.5 shrink-0" />
+            <span className="text-xs text-gray-500 font-medium mr-1">From:</span>
+            <input
+              type="text"
+              value={Array.isArray(params.origins) ? params.origins.join(', ') : params.origins}
+              onChange={(e) => {
+                const val = e.target.value;
+                const codes = val.split(',').map((s) => s.trim().toUpperCase()).filter(Boolean);
+                onChange({ ...params, origins: codes.length ? codes : (val ? [val.toUpperCase()] : []) });
+              }}
+              placeholder="e.g. BUD, VIE, BER, STN..."
+              title="Enter any origin airport code(s), e.g. BUD, BTS, VIE, STN, BER"
+              className="text-xs font-semibold text-gray-900 bg-transparent focus:outline-none w-28 sm:w-44"
+            />
+            <button
+              type="button"
+              onClick={() => toggleDropdown('origins')}
+              title="Quick select airports"
+              className="ml-1 text-gray-400 hover:text-gray-700 cursor-pointer p-0.5"
+            >
+              <ChevronDown className="w-3.5 h-3.5" />
+            </button>
+          </div>
 
           {activeDropdown === 'origins' && (
-            <div className="absolute left-0 mt-2 w-56 max-w-[calc(100vw-3rem)] bg-white rounded-xl shadow-xl border border-gray-200 p-3 z-30">
-              <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Home Airports</p>
-              <div className="space-y-1.5">
-                {ALL_AIRPORTS.map((apt) => {
-                  const isSelected = params.origins.includes(apt.code);
+            <div className="absolute left-0 mt-2 w-72 max-w-[calc(100vw-3rem)] bg-white rounded-xl shadow-xl border border-gray-200 p-3 z-30">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Quick Select Airports</p>
+                <button
+                  type="button"
+                  onClick={() => onChange({ ...params, origins: ['BUD', 'DEB', 'BTS'] })}
+                  className="text-[10px] text-blue-600 hover:underline font-semibold cursor-pointer"
+                >
+                  Reset Default
+                </button>
+              </div>
+              <div className="max-h-48 overflow-y-auto space-y-1 pr-1">
+                {POPULAR_AIRPORTS.map((apt) => {
+                  const isSelected = Array.isArray(params.origins) && params.origins.includes(apt.code);
                   return (
                     <button
                       key={apt.code}
+                      type="button"
                       onClick={() => toggleOrigin(apt.code)}
                       className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors ${
                         isSelected ? 'bg-blue-50 text-blue-800' : 'text-gray-700 hover:bg-gray-100'
@@ -113,6 +144,9 @@ export default function FilterChips({ params, onChange, onApply }) {
                   );
                 })}
               </div>
+              <p className="text-[10px] text-gray-400 mt-2 pt-2 border-t border-gray-100 italic">
+                Tip: You can also type any custom airport code directly into the From field.
+              </p>
             </div>
           )}
         </div>

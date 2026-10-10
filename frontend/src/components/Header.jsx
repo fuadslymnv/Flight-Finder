@@ -14,11 +14,11 @@ export default function Header({ currency, setCurrency, onOpenSettings, onClearC
             <div className="flex items-center space-x-1.5 sm:space-x-2">
               <span className="text-base sm:text-xl font-bold tracking-tight text-gray-900 truncate">FlightFinder</span>
               <span className="hidden xs:inline-block px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs font-semibold rounded-full bg-blue-100 text-blue-800 shrink-0">
-                BUD • DEB • BTS
+                All Airports
               </span>
             </div>
             <p className="text-[11px] sm:text-xs text-gray-500 font-medium hidden md:block">
-              Wizz Air & Ryanair • Open-Jaw Smart Combos
+              Wizz Air & Ryanair • Open-Jaw Smart Combos from Any Airport
             </p>
           </div>
         </div>

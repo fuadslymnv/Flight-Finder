@@ -54,3 +54,19 @@ def test_parser_advanced_suggestions():
     assert p3.min_nights == 3
     assert p3.max_nights == 3
 
+
+def test_parser_any_airport():
+    base = date(2026, 10, 3)
+    p1 = parse_natural_language_query("from BER to Rome under 50 EUR", base_date=base)
+    assert p1.origins == ["BER"]
+    assert p1.destination == "Rome"
+
+    p2 = parse_natural_language_query("flights from Vienna to London next month", base_date=base)
+    assert "VIE" in p2.origins
+    assert p2.destination == "London"
+
+    p3 = parse_natural_language_query("from STN, LTN to Barcelona for weekend", base_date=base)
+    assert "STN" in p3.origins and "LTN" in p3.origins
+    assert p3.destination == "Barcelona"
+
+

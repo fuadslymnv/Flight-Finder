@@ -91,7 +91,7 @@
       "from_airport": "BUD",
       "to_airport": "VIE",
       "transit_hours": 2.5,
-      "description": "ÖBB Railjet / RegioJet / FlixBus between Budapest & Vienna (~2.5 hours)",
+      "description": "\u00d6BB Railjet / RegioJet / FlixBus between Budapest & Vienna (~2.5 hours)",
       "cost_eur": 18.0,
       "cost_huf": 7200.0
     },
@@ -100,7 +100,7 @@
       "from_airport": "VIE",
       "to_airport": "BUD",
       "transit_hours": 2.5,
-      "description": "ÖBB Railjet / RegioJet / FlixBus between Vienna & Budapest (~2.5 hours)",
+      "description": "\u00d6BB Railjet / RegioJet / FlixBus between Vienna & Budapest (~2.5 hours)",
       "cost_eur": 18.0,
       "cost_huf": 7200.0
     }

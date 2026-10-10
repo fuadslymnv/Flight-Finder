@@ -22,6 +22,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('results'); // 'results' | 'explore' | 'calendar'
   const [currency, setCurrency] = useState('EUR');
   const [loading, setLoading] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
   const [error, setError] = useState(null);
   const [itineraries, setItineraries] = useState([]);
   const [exploreData, setExploreData] = useState([]);
@@ -46,17 +47,14 @@ export default function App() {
     airlines: ["W6", "W9", "FR", "RK"],
   });
 
-  // Initial load
-  useEffect(() => {
-    handleSearch(params);
-  }, []);
-
   // Update currency when changed in header
   const handleCurrencyChange = (newCurr) => {
     setCurrency(newCurr);
     const updated = { ...params, currency: newCurr };
     setParams(updated);
-    handleSearch(updated);
+    if (hasSearched) {
+      handleSearch(updated);
+    }
   };
 
   const handleParseAndSearch = async (queryText) => {
@@ -75,6 +73,7 @@ export default function App() {
   };
 
   const handleSearch = async (currentParams = params, forceRefresh = false) => {
+    setHasSearched(true);
     setLoading(true);
     setError(null);
     try {
@@ -115,6 +114,17 @@ export default function App() {
     handleSearch(updated);
   };
 
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    if (tab === 'explore' && exploreData.length === 0 && !loading) {
+      setLoading(true);
+      exploreDestinations(params)
+        .then(setExploreData)
+        .catch(() => {})
+        .finally(() => setLoading(false));
+    }
+  };
+
   // Sort itineraries
   const sortedItineraries = [...itineraries].sort((a, b) => {
     if (sortBy === 'price') return a.total_price - b.total_price;
@@ -145,10 +155,10 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-6">
           <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-8">
             <h1 className="text-2xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
-              Cheap Flights from <span className="text-blue-600">Budapest</span>, <span className="text-blue-600">Debrecen</span> & <span className="text-blue-600">Bratislava</span>
+              Cheap Flights from <span className="text-blue-600">Any Airport</span>
             </h1>
             <p className="text-xs sm:text-sm text-gray-500 font-medium mt-2">
-              Google Flights-style one-way combination engine for Wizz Air & Ryanair with Open-Jaw support.
+              Google Flights-style one-way combination engine for Wizz Air & Ryanair with Open-Jaw support across all airports.
             </p>
           </div>
 
@@ -170,7 +180,7 @@ export default function App() {
           <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-200 pb-3 mb-6 gap-3">
             <div className="flex items-center space-x-1.5 sm:space-x-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
               <button
-                onClick={() => setActiveTab('results')}
+                onClick={() => handleTabChange('results')}
                 className={`flex items-center space-x-1.5 px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
                   activeTab === 'results'
                     ? 'bg-blue-600 text-white shadow-xs'
@@ -182,7 +192,7 @@ export default function App() {
               </button>
 
               <button
-                onClick={() => setActiveTab('explore')}
+                onClick={() => handleTabChange('explore')}
                 className={`flex items-center space-x-1.5 px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
                   activeTab === 'explore'
                     ? 'bg-blue-600 text-white shadow-xs'
@@ -194,7 +204,7 @@ export default function App() {
               </button>
 
               <button
-                onClick={() => setActiveTab('calendar')}
+                onClick={() => handleTabChange('calendar')}
                 className={`flex items-center space-x-1.5 px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
                   activeTab === 'calendar'
                     ? 'bg-blue-600 text-white shadow-xs'
@@ -241,8 +251,24 @@ export default function App() {
                     <Loader2 className="w-8 h-8 text-blue-600 animate-spin mx-auto mb-3" />
                     <h3 className="text-sm font-bold text-gray-900">Finding cheapest round trips...</h3>
                     <p className="text-xs text-gray-500 mt-1">
-                      Querying Wizz Air & Ryanair direct one-way legs across BUD, DEB, and BTS
+                      Querying Wizz Air & Ryanair direct one-way legs across selected airports
                     </p>
+                  </div>
+                ) : !hasSearched ? (
+                  <div className="bg-white rounded-3xl border border-gray-200/80 p-8 sm:p-14 text-center shadow-xs">
+                    <div className="w-16 h-16 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto mb-4">
+                      <Plane className="w-8 h-8 -rotate-45" />
+                    </div>
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">Ready to find cheap flights?</h3>
+                    <p className="text-xs sm:text-sm text-gray-500 max-w-lg mx-auto mb-6">
+                      Enter a natural language search above, customize your origin airports and filters, or click below to search.
+                    </p>
+                    <button
+                      onClick={() => handleSearch(params)}
+                      className="inline-flex items-center space-x-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md shadow-blue-500/20 transition-all cursor-pointer hover:scale-[1.02]"
+                    >
+                      <span>Find Flights</span>
+                    </button>
                   </div>
                 ) : sortedItineraries.length === 0 ? (
                   <div className="bg-white rounded-2xl border border-gray-200 p-12 text-center">

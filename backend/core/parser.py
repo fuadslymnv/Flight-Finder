@@ -34,7 +34,22 @@ AIRPORT_KEYWORDS = {
     "deb": "DEB", "debrecen": "DEB",
     "bts": "BTS", "bratislava": "BTS",
     "vie": "VIE", "vienna": "VIE", "wien": "VIE",
+    "prg": "PRG", "prague": "PRG",
+    "ber": "BER", "berlin": "BER",
+    "waw": "WAW", "warsaw": "WAW",
+    "krk": "KRK", "krakow": "KRK",
+    "stn": "STN", "ltn": "LTN", "london": "STN,LTN",
+    "cia": "CIA", "fco": "FCO", "rome": "CIA,FCO",
+    "bgy": "BGY", "mxp": "MXP", "milan": "BGY,MXP",
+    "mad": "MAD", "madrid": "MAD",
+    "bcn": "BCN", "barcelona": "BCN",
+    "dub": "DUB", "dublin": "DUB",
+    "bva": "BVA", "paris": "BVA",
+    "crl": "CRL", "brussels": "CRL",
+    "ein": "EIN", "eindhoven": "EIN",
+    "ams": "AMS", "amsterdam": "AMS",
 }
+
 
 
 def parse_natural_language_query(text: str, base_date: Optional[date] = None) -> SearchParameters:
@@ -141,17 +156,30 @@ def parse_natural_language_query(text: str, base_date: Optional[date] = None) ->
     origins = []
     from_match = re.search(r'from\s+([a-zA-Z\s,]+?)(?:\s+to|\s+for|\s+in|\s+under|\s+next|\s+exclude|$)', q)
     if from_match:
-        from_text = from_match.group(1)
+        from_text = from_match.group(1).lower()
         for word, code in AIRPORT_KEYWORDS.items():
-            if word in from_text and code not in origins:
-                origins.append(code)
+            if re.search(rf'\b{word}\b', from_text):
+                for c in code.split(','):
+                    if c not in origins:
+                        origins.append(c)
+        tokens = re.split(r'[,/\s]|(?:\b(?:and|or)\b)', from_text)
+        for tok in tokens:
+            tok_clean = tok.strip().upper()
+            if len(tok_clean) == 3 and tok_clean.isalpha() and tok_clean not in {"AND", "THE", "FOR", "OUT", "ANY", "ALL"}:
+                if tok_clean not in origins:
+                    origins.append(tok_clean)
     else:
+        # Check text before 'to' or match airport keywords
+        prefix = q.split(" to ")[0] if " to " in q else q
         for word, code in AIRPORT_KEYWORDS.items():
-            if re.search(rf'\b{word}\b', q) and code not in origins:
-                origins.append(code)
+            if re.search(rf'\b{word}\b', prefix):
+                for c in code.split(','):
+                    if c not in origins:
+                        origins.append(c)
 
     if not origins:
         origins = ["BUD", "DEB", "BTS"]
+
 
     # 6. Parse Exclusions (e.g. "exclude Warsaw, London, Milan")
     exclude_destinations = []
@@ -204,9 +232,7 @@ def parse_natural_language_query(text: str, base_date: Optional[date] = None) ->
             ]
             if words:
                 d_str = " ".join(words).title()
-                if d_str.lower() in ("tallin", "talinn"):
-                    d_str = "Tallinn"
-                if d_str.lower() not in AIRPORT_KEYWORDS:
+                if d_str.upper() not in origins and d_str.lower() not in {"from"}:
                     cleaned_list.append(d_str)
         return ", ".join(cleaned_list) if cleaned_list else None
 
