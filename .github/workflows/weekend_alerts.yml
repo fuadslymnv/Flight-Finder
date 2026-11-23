@@ -27,6 +27,14 @@ jobs:
         run: |
           pip install -r requirements.txt
 
+      - name: Restore Alert History Cache
+        uses: actions/cache@v4
+        with:
+          path: flight_cache.db
+          key: flight-cache-${{ github.run_id }}
+          restore-keys: |
+            flight-cache-
+
       - name: Run Weekend Deals Alert Check
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
