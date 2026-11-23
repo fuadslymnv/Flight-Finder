@@ -133,6 +133,13 @@ class FlightEngine:
                 if params.return_weekdays and ret.departure_date.weekday() not in params.return_weekdays:
                     continue
 
+                # Check Monday arrival time constraint (e.g. landing before 9:00 AM for weekday 9-5 workers)
+                if params.max_monday_arrival_hour is not None and ret.arrival_time.weekday() == 0:
+                    arr_hour = ret.arrival_time.hour
+                    arr_min = ret.arrival_time.minute
+                    if arr_hour > params.max_monday_arrival_hour or (arr_hour == params.max_monday_arrival_hour and arr_min > 0):
+                        continue
+
                 is_open_jaw = (out.origin != ret.destination)
                 if is_open_jaw and not params.allow_open_jaw:
                     continue

@@ -87,9 +87,9 @@ def parse_natural_language_query(text: str, base_date: Optional[date] = None) ->
             if idx not in departure_weekdays:
                 departure_weekdays.append(idx)
 
-    # If nothing specified, default to Friday and Saturday for weekend/short trips
+    # If nothing specified, default to all days (Monday - Sunday)
     if not departure_weekdays:
-        departure_weekdays = [4, 5]
+        departure_weekdays = [0, 1, 2, 3, 4, 5, 6]
 
     departure_weekdays.sort()
 
@@ -310,8 +310,15 @@ def parse_natural_language_query(text: str, base_date: Optional[date] = None) ->
         allow_open_jaw = True
 
     # 9. Time of day (e.g. "Thursday evening")
-    thursday_evening_only = "thursday evening" in q or ("evening" in q and 3 in departure_weekdays)
+    thursday_evening_only = "thursday evening" in q or ("evening" in q and "thursday" in q)
     min_outbound_hour = 17 if "evening" in q else None
+
+    # 10. Weekend return constraints for 9-5 workers (Sun or Mon <= 9 AM)
+    return_weekdays = None
+    max_monday_arrival_hour = None
+    if "weekend" in q:
+        return_weekdays = [0, 6]
+        max_monday_arrival_hour = 9
 
     return SearchParameters(
         query_text=text,
@@ -322,6 +329,8 @@ def parse_natural_language_query(text: str, base_date: Optional[date] = None) ->
         min_nights=min_nights,
         max_nights=max_nights,
         departure_weekdays=departure_weekdays,
+        return_weekdays=return_weekdays,
+        max_monday_arrival_hour=max_monday_arrival_hour,
         allow_open_jaw=allow_open_jaw,
         max_price=max_price,
         currency=currency,

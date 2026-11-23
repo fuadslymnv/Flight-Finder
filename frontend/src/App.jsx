@@ -32,14 +32,14 @@ export default function App() {
 
   // Search parameters state
   const [params, setParams] = useState({
-    query_text: "cheap 2-3 night trip, leave Fri or Sat, next 2 months",
+    query_text: "",
     origins: ["BUD", "DEB", "BTS"],
     destination: "anywhere",
     date_from: new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0],
     date_to: new Date(Date.now() + 60 * 86400000).toISOString().split('T')[0],
     min_nights: 2,
     max_nights: 3,
-    departure_weekdays: [4, 5], // Fri, Sat
+    departure_weekdays: [0, 1, 2, 3, 4, 5, 6], // Mon-Sun (all days selected by default)
     allow_open_jaw: true,
     include_ground_transfer_cost: false,
     max_price: null,
@@ -281,7 +281,7 @@ export default function App() {
                       onClick={() => {
                         const reset = {
                           ...params,
-                          departure_weekdays: [4, 5],
+                          departure_weekdays: [0, 1, 2, 3, 4, 5, 6],
                           min_nights: 2,
                           max_nights: 4,
                           destination: 'anywhere',
@@ -291,7 +291,7 @@ export default function App() {
                       }}
                       className="px-4 py-2 text-xs font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors cursor-pointer"
                     >
-                      Reset to Weekend Trip
+                      Reset Filters
                     </button>
                   </div>
                 ) : (

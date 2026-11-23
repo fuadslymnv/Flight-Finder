@@ -83,13 +83,57 @@ python find.py "cheap 2-3 night trip, leave Fri or Sat, next 2 months"
 # Search with specific constraints
 python find.py "BUD to London for 3 nights in November under 80 EUR"
 
+# Search weekend getaway deals for 9-5 workers
+python find.py --weekend-deals
+
 # Using CLI Flags
 python find.py --origin BUD,BTS --dest Rome --nights 2-3 --weekdays Fri,Sat --currency EUR
 ```
 
 ---
 
-### 3. Run the Web Application
+### 3. Weekend Deal Alert Watcher & Telegram Notifications
+
+Built specifically for travelers working **9-5 on weekdays**:
+- **Outbound**: Friday anytime or Saturday anytime.
+- **Return**: Sunday anytime or **Monday morning landing before 09:00 AM** (so you can be on time for work!).
+- **Horizon**: Next 60 days.
+- **Budget**: Deals under **60 EUR** (configurable).
+- **Open-Jaw**: Fully supported (e.g., depart BUD, return to BTS or DEB).
+- **Schedule**: Scans every **6 hours starting at 9:00 AM** (`09:00`, `15:00`, `21:00`, `03:00`).
+- **Smart Deduplication**: Avoids repeated alerts unless a deal is brand new or the price has dropped.
+
+#### Setup Telegram Bot (2 minutes):
+1. Open Telegram and search for `@BotFather`. Send `/newbot`, choose a name and username, and copy your **Bot Token**.
+2. Open Telegram and search for `@userinfobot`. Send `/start` and copy your numeric **Id** (this is your **Chat ID**).
+3. Put them in `settings.json` under `"alerts.telegram"` or in `.env`:
+   ```env
+   TELEGRAM_BOT_TOKEN="your_token_here"
+   TELEGRAM_CHAT_ID="your_chat_id_here"
+   ```
+4. Verify connection:
+   ```bash
+   python alert_watcher.py --test-telegram
+   ```
+
+#### Run Deal Checks & Watcher:
+```bash
+# 1. Run an immediate scan now and send deals:
+python alert_watcher.py --now
+
+# 2. Run continuous background scheduler (every 6 hours starting from 9:00 AM):
+python alert_watcher.py --daemon
+
+# 3. Dry-run mode (find and display deals without sending messages):
+python alert_watcher.py --dry-run
+
+# 4. Custom budget override (e.g. under 50 EUR):
+python alert_watcher.py --max-price 50
+```
+
+---
+
+### 4. Run the Web Application
 
 #### Start the FastAPI Server:
 ```bash

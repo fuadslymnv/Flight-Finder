@@ -87,11 +87,18 @@ async def async_main():
     parser.add_argument("--include-transfer-cost", action="store_true", help="Add ground transfer cost to ranking")
     parser.add_argument("--refresh", action="store_true", help="Force refresh data bypassing cache")
     parser.add_argument("--limit", type=int, default=25, help="Number of results to display")
+    parser.add_argument("--weekend-deals", action="store_true", help="Search weekend getaway deals for 9-5 weekday workers")
 
     args = parser.parse_args()
 
-    # Step 1: Parse natural language query if provided
-    if args.query:
+    settings = load_settings()
+
+    # Step 1: Parse natural language query if provided, or load weekend params
+    if args.weekend_deals:
+        from backend.core.weekend import build_weekend_search_params
+        params = build_weekend_search_params(settings.alerts)
+        print(f"\n🏖️ Searching Weekend Deals for 9-5 Weekday Workers (under {params.max_price} {params.currency}, next {settings.alerts.horizon_days} days)")
+    elif args.query:
         params = parse_natural_language_query(args.query)
         print(f"\n💬 Natural language query: \"{args.query}\"")
     else:

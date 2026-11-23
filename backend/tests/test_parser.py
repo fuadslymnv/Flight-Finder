@@ -87,4 +87,13 @@ def test_parser_cheapest_weekend_flights_vilnius_multiple_months():
     assert p.max_nights == 3
 
 
+def test_parser_default_all_weekdays_when_not_specified():
+    base = date(2026, 10, 10)
+    p = parse_natural_language_query("cheap tickets under 35 eur maximum 3 nights", base_date=base)
+    assert p.departure_weekdays == [0, 1, 2, 3, 4, 5, 6]
+    assert p.max_nights == 3
+    assert p.max_price == 35.0
+
+
+
 

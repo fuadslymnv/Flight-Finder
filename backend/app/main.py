@@ -1,16 +1,39 @@
 import os
+import asyncio
+from contextlib import asynccontextmanager
 from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
-from backend.app.api.routes import router as api_router
+from backend.app.api.routes import router as api_router, engine
+from backend.core.settings import load_settings
+from backend.services.scheduler import start_alert_daemon
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    settings = load_settings()
+    daemon_task = None
+    if settings.alerts.enabled:
+        daemon_task = asyncio.create_task(
+            start_alert_daemon(engine, run_immediately=False)
+        )
+    yield
+    if daemon_task and not daemon_task.done():
+        daemon_task.cancel()
+        try:
+            await daemon_task
+        except asyncio.CancelledError:
+            pass
+
 
 app = FastAPI(
     title="Cheap Flight Finder API",
     description="Google Flights-style finder for Wizz Air and Ryanair with Open-Jaw support for BUD, DEB, and BTS",
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 # CORS middleware for local frontend dev

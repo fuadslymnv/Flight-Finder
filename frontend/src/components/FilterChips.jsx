@@ -62,7 +62,7 @@ export default function FilterChips({ params, onChange, onApply }) {
   };
 
   const toggleWeekday = (dayId) => {
-    let nextDays = [...params.departure_weekdays];
+    let nextDays = Array.isArray(params.departure_weekdays) ? [...params.departure_weekdays] : [];
     if (nextDays.includes(dayId)) {
       if (nextDays.length > 1) {
         nextDays = nextDays.filter((d) => d !== dayId);
@@ -265,17 +265,38 @@ export default function FilterChips({ params, onChange, onApply }) {
           >
             <CalendarIcon className="w-3.5 h-3.5 text-green-600" />
             <span>
-              Out: {params.departure_weekdays.map((d) => WEEKDAYS[d]?.label).join(', ')}
+              Out: {params.departure_weekdays?.length === 7
+                ? 'All Days'
+                : (params.departure_weekdays || []).map((d) => WEEKDAYS[d]?.label).join(', ') || 'Any'}
             </span>
             <ChevronDown className="w-3 h-3 opacity-60" />
           </button>
 
           {activeDropdown === 'weekdays' && (
-            <div className="absolute left-0 mt-2 w-64 max-w-[calc(100vw-3rem)] bg-white rounded-xl shadow-xl border border-gray-200 p-3 z-30">
-              <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Allowed Outbound Days</p>
+            <div className="absolute left-0 mt-2 w-72 max-w-[calc(100vw-3rem)] bg-white rounded-xl shadow-xl border border-gray-200 p-3 z-30">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Allowed Outbound Days</p>
+                <div className="flex items-center space-x-2 text-[11px]">
+                  <button
+                    type="button"
+                    onClick={() => onChange({ ...params, departure_weekdays: [0, 1, 2, 3, 4, 5, 6] })}
+                    className="text-blue-600 hover:underline font-semibold cursor-pointer"
+                  >
+                    All Days
+                  </button>
+                  <span className="text-gray-300">|</span>
+                  <button
+                    type="button"
+                    onClick={() => onChange({ ...params, departure_weekdays: [4, 5] })}
+                    className="text-blue-600 hover:underline font-semibold cursor-pointer"
+                  >
+                    Weekend
+                  </button>
+                </div>
+              </div>
               <div className="grid grid-cols-4 gap-1.5">
                 {WEEKDAYS.map((w) => {
-                  const isSelected = params.departure_weekdays.includes(w.id);
+                  const isSelected = params.departure_weekdays?.includes(w.id);
                   return (
                     <button
                       key={w.id}

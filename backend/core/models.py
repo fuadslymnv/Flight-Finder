@@ -75,7 +75,7 @@ class SearchParameters(BaseModel):
     date_to: date
     min_nights: int = 2
     max_nights: int = 3
-    departure_weekdays: List[int] = Field(default_factory=lambda: [4, 5])  # 4=Fri, 5=Sat (0=Mon..6=Sun)
+    departure_weekdays: List[int] = Field(default_factory=lambda: [0, 1, 2, 3, 4, 5, 6])  # 0=Mon..6=Sun (all days by default)
     return_weekdays: Optional[List[int]] = None
     allow_open_jaw: bool = True
     include_ground_transfer_cost: bool = False
@@ -85,6 +85,7 @@ class SearchParameters(BaseModel):
     exclude_destinations: List[str] = Field(default_factory=list)
     min_outbound_hour: Optional[int] = None
     thursday_evening_only: bool = False
+    max_monday_arrival_hour: Optional[int] = None
 
 
 class GroundTransferPreset(BaseModel):
@@ -97,6 +98,29 @@ class GroundTransferPreset(BaseModel):
     cost_huf: float
 
 
+class TelegramAlertSettings(BaseModel):
+    enabled: bool = True
+    bot_token: str = ""
+    chat_id: str = ""
+
+
+class WeekendAlertSettings(BaseModel):
+    enabled: bool = True
+    check_interval_hours: int = 6
+    start_hour: int = 9  # 09:00, 15:00, 21:00, 03:00
+    max_price: float = 60.0
+    currency: str = "EUR"
+    horizon_days: int = 60
+    min_nights: int = 1
+    max_nights: int = 3
+    allow_open_jaw: bool = True
+    outbound_weekdays: List[int] = Field(default_factory=lambda: [4, 5])  # Friday, Saturday
+    return_weekdays: List[int] = Field(default_factory=lambda: [6, 0])    # Sunday, Monday
+    max_monday_arrival_hour: Optional[int] = 9                            # Landing before 9:00 AM on Monday
+    origins: List[str] = Field(default_factory=lambda: ["BUD", "DEB", "BTS"])
+    telegram: TelegramAlertSettings = Field(default_factory=TelegramAlertSettings)
+
+
 class AppSettings(BaseModel):
     default_home_airports: List[str] = ["BUD", "DEB", "BTS"]
     default_airlines: List[str] = ["W6", "W9", "FR", "RK"]
@@ -104,6 +128,7 @@ class AppSettings(BaseModel):
     cache_ttl_hours: int = 4
     include_ground_transfer_cost_by_default: bool = False
     ground_transfers: Dict[str, GroundTransferPreset] = Field(default_factory=dict)
+    alerts: WeekendAlertSettings = Field(default_factory=WeekendAlertSettings)
 
 
 class ExploreDestinationSummary(BaseModel):

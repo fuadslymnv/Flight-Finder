@@ -10,12 +10,16 @@ from backend.core.models import (
     ExploreDestinationSummary,
     HeatmapCell,
     AppSettings,
+    WeekendAlertSettings,
 )
 from backend.core.parser import parse_natural_language_query
 from backend.core.kiwi_provider import KiwiMcpProvider
 from backend.core.combiner import FlightEngine
 from backend.core.cache import FlightCache
 from backend.core.settings import load_settings, save_settings
+from backend.services.telegram_notifier import TelegramNotifier
+from backend.services.alert_tracker import AlertTracker
+from backend.services.scheduler import run_weekend_alert_cycle
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -125,3 +129,76 @@ async def clear_cache_endpoint():
     """Clear all cached flight legs."""
     cache.clear_all()
     return {"status": "ok", "message": "Flight cache cleared successfully"}
+
+
+@router.get("/alerts/config", response_model=WeekendAlertSettings)
+async def get_alerts_config_endpoint():
+    """Retrieve current weekend deal alert configuration."""
+    current_settings = load_settings()
+    return current_settings.alerts
+
+
+@router.put("/alerts/config", response_model=WeekendAlertSettings)
+async def update_alerts_config_endpoint(config: WeekendAlertSettings):
+    """Update weekend deal alert configuration."""
+    current_settings = load_settings()
+    current_settings.alerts = config
+    save_settings(current_settings)
+    engine.settings = current_settings
+    return config
+
+
+@router.post("/alerts/test-telegram")
+async def test_telegram_endpoint():
+    """Test Telegram Bot connection with current credentials."""
+    current_settings = load_settings()
+    notifier = TelegramNotifier(config=current_settings.alerts.telegram)
+    if not notifier.is_configured:
+        raise HTTPException(
+            status_code=400,
+            detail="Telegram Bot Token or Chat ID is not configured.",
+        )
+    success, message = await notifier.test_connection()
+    if not success:
+        raise HTTPException(status_code=502, detail=message)
+    return {"status": "ok", "message": message}
+
+
+class AlertScanResponse(BaseModel):
+    total_deals: int
+    fresh_deals: int
+    dispatched_to_telegram: bool
+    itineraries: List[RoundTripItinerary]
+
+
+@router.post("/alerts/scan", response_model=AlertScanResponse)
+async def scan_alerts_endpoint(dry_run: bool = False, force_refresh: bool = False):
+    """Trigger an immediate weekend deal scan."""
+    try:
+        engine.settings = load_settings()
+        tracker = AlertTracker()
+        notifier = TelegramNotifier(config=engine.settings.alerts.telegram)
+        all_deals, fresh = await run_weekend_alert_cycle(
+            engine=engine,
+            notifier=notifier,
+            tracker=tracker,
+            force_refresh=force_refresh,
+            dry_run=dry_run,
+        )
+        return AlertScanResponse(
+            total_deals=len(all_deals),
+            fresh_deals=len(fresh),
+            dispatched_to_telegram=notifier.is_configured and not dry_run and len(fresh) > 0,
+            itineraries=all_deals,
+        )
+    except Exception as e:
+        logger.error(f"Error during alert scan: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/alerts/clear-history")
+async def clear_alert_history_endpoint():
+    """Clear previously dispatched deals history to allow re-alerting."""
+    tracker = AlertTracker()
+    tracker.clear_history()
+    return {"status": "ok", "message": "Alert history cleared successfully"}

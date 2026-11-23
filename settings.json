@@ -104,5 +104,35 @@
       "cost_eur": 18.0,
       "cost_huf": 7200.0
     }
+  },
+  "alerts": {
+    "enabled": true,
+    "check_interval_hours": 6,
+    "start_hour": 9,
+    "max_price": 60.0,
+    "currency": "EUR",
+    "horizon_days": 60,
+    "min_nights": 1,
+    "max_nights": 3,
+    "allow_open_jaw": true,
+    "outbound_weekdays": [
+      4,
+      5
+    ],
+    "return_weekdays": [
+      6,
+      0
+    ],
+    "max_monday_arrival_hour": 9,
+    "origins": [
+      "BUD",
+      "DEB",
+      "BTS"
+    ],
+    "telegram": {
+      "enabled": true,
+      "bot_token": "",
+      "chat_id": "1116642500"
+    }
   }
 }
