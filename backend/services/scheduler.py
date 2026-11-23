@@ -97,6 +97,17 @@ async def run_weekend_alert_cycle(
 
     if not fresh_deals:
         logger.info("No new deals to send this cycle.")
+        if notifier.is_configured and not dry_run and all_deals:
+            top_deal = all_deals[0]
+            city_name = top_deal.destination_city or top_deal.outbound.destination
+            summary_msg = (
+                f"ℹ️ *FlightFinder Scheduled Scan Completed*\n"
+                f"🔍 Checked weekend getaways across next {alert_settings.horizon_days} days.\n"
+                f"• Total matching deals: {len(all_deals)} (all previously notified)\n"
+                f"• Current best deal: *{city_name.upper()}* for *{top_deal.total_price:,.0f}€* ({top_deal.outbound.origin} ➔ {top_deal.outbound.destination})\n"
+                f"• No new deals or price drops since last check."
+            )
+            await notifier.send_message(summary_msg)
         return all_deals, []
 
     if dry_run:

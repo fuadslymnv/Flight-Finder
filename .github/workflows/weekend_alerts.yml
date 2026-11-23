@@ -2,12 +2,13 @@ name: Weekend Flight Deals Alert
 
 on:
   schedule:
-    # Runs every 6 hours starting from 9:00 AM CET (UTC+1):
-    # 08:00 UTC = 09:00 CET
-    # 14:00 UTC = 15:00 CET
-    # 20:00 UTC = 21:00 CET
-    # 02:00 UTC = 03:00 CET
-    - cron: '0 2,8,14,20 * * *'
+    # Runs every 6 hours aligned with 9:00 AM CET (UTC+1).
+    # Using minute 7 avoids the heavy GitHub Actions queue congestion at minute 0:
+    # 08:07 UTC = 09:07 CET
+    # 14:07 UTC = 15:07 CET
+    # 20:07 UTC = 21:07 CET
+    # 02:07 UTC = 03:07 CET
+    - cron: '7 2,8,14,20 * * *'
   workflow_dispatch: # Allows manual trigger from GitHub UI anytime
 
 jobs:
