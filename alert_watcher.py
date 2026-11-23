@@ -31,6 +31,10 @@ if sys.platform == "win32":
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from backend.core.kiwi_provider import KiwiMcpProvider
+from dotenv import load_dotenv
+
+# Load .env
+load_dotenv(Path(__file__).resolve().parent / ".env")
 from backend.core.combiner import FlightEngine
 from backend.core.cache import FlightCache
 from backend.core.settings import load_settings, save_settings

@@ -6,7 +6,12 @@ Sends beautifully formatted flight deal alerts with deep booking links to a Tele
 import os
 import logging
 from typing import List, Optional, Tuple
+from pathlib import Path
 import httpx
+from dotenv import load_dotenv
+
+# Load .env file from project root if present
+load_dotenv(Path(__file__).resolve().parent.parent.parent / ".env")
 
 from backend.core.models import RoundTripItinerary, TelegramAlertSettings
 
